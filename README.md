@@ -60,7 +60,7 @@ export default {
 	      },
 	      //是否可以发送 
 	      canTodo: () => {
-	        return /^1[345678]\d9$/.test(15232509223);
+	        return /^1[345678]\d{9}$/.test(15232509223);
 	      },
 	      //canTode验证成功后执行 发送短信验证码
 	      todo: () => {

@@ -1,13 +1,12 @@
-<template>
-  <div class="btn"
-       :class="{isRun:isRun}"
-       @click="runtime">
-    {{text}}
-  </div>
-</template>
-<script>
+
   export default {
-    components: {},
+   template:`
+    <div 
+      :class="{isRun:isRun}"
+      @click="runtime">
+      {{text}}
+    </div>
+  `,
     data: () => {
       return {
         time: '',
@@ -32,10 +31,7 @@
           this.isFirst = false;
           this.isRun = true;
           this.time = this.totalTime;
-          config.todo && config.todo().catch(() => {
-            //发送失败 停止
-            this.stop();
-          });
+          config.todo && config.todo();
           this.timer = setInterval(() => {
             if (this.time == 0) {
               this.stop();
@@ -72,12 +68,4 @@
     },
     filters: {}
   }
-</script>
-<style scoped lang="scss">
-  @import "~@/../static/css/gemixin.scss";
 
-  .btn {
-    @include ge-btn();
-
-  }
-</style>

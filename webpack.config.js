@@ -5,8 +5,8 @@ module.exports = {
   productionGzip: true,
   productionGzipExtensions: ['js', 'css'],
   output: {
-    path: './build',
-    publicPath: './',
+    path: './bundle',
+    publicPath: '/',
     filename: 'bundle.js'
   },
   resolve:{

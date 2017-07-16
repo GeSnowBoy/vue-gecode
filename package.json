@@ -4,7 +4,8 @@
   "description": "基于Vue2开发的获取验证码倒计时组件,高度自定义配置,可实现各种开发需求.",
   "main": "src/index.js",
   "scripts": {
-    "start": "webpack-dev-server --inline --content-base ."
+    "start": "webpack-dev-server --inline --content-base .",
+    "build": "webpack &&  git subtree push  --prefix=build origin gh-pages"
   },
   "author": "",
   "license": "ISC",

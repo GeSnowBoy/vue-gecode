@@ -11,7 +11,7 @@ new Vue({
   	return {
   		config:{
 	      //开始时候的文本
-	      startText: '获取验证码',
+	      startText: '获取验证码(自定义)',
 	      //获取验证码结束后文本
 	      endText: '再次获取',
 	      //验证码倒计时总时间(秒)

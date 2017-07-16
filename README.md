@@ -89,6 +89,7 @@ export default {
 | startText | 字符串 | 未输入时显示文字 | string | 获取验证码 |
 | endText | 字符串 | 验证码发送完成后显示文字 | string | 再次获取 |
 | computeText | 函数 | 每次时间减少显示的文字,参数为剩余时间 | function | 默认返回->重新获取 * s |
+| activeClass | 字符串 | 验证码倒计时添加的类名 | String | isRun |
 | totalTime | 数值 | 获取验证码后的倒计时总数(s) | Number | 60 |
 | tickTime | 数值 | 每次减少的时间(s) | Number | 1 |
 | canTodo | 函数 | 判断是否可以发送验证码 | function | — |

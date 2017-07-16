@@ -1,10 +1,7 @@
 .idea/
-package - 副本.json
+
 # dependencies
 /node_modules
-
-# testing
-/coverage
 
 # production
 /build

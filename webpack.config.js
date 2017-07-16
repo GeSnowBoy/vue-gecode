@@ -1,9 +1,13 @@
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
   entry: './index.js',
-
+  productionSourceMap: false,
+  productionGzip: true,
+  productionGzipExtensions: ['js', 'css'],
   output: {
-    filename: 'bundle.js',
-    publicPath: ''
+    path: './build',
+    publicPath: './',
+    filename: 'bundle.js'
   },
   resolve:{
     alias: {
@@ -18,5 +22,12 @@ module.exports = {
         loader: 'babel-loader?presets[]=es2015'
        }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'index.html',
+      inject: true
+    })
+  ]
 }

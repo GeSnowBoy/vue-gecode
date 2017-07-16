@@ -90,7 +90,7 @@ cd vue-gecode
 npm install
 
 //4. 运行demo
-npm run
+npm start
 ```
 
 ## API

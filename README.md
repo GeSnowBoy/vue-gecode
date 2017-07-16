@@ -4,7 +4,7 @@
 
 
 
-[这里是可爱的Demo](https://quietboys.github.io/vue-input-code/)
+[这里是可爱的Demo](https://gesnowboy.github.io/vue-gecode/)
 
 
 ## 安装和使用

@@ -1,4 +1,5 @@
 # vue-gecode
+<<<<<<< HEAD
 
 ## 基于Vue2.0获取手机验证码插件,可高度自定义.
 
@@ -95,3 +96,6 @@ export default {
 | canTodo | 函数 | 判断是否可以发送验证码 | function | — |
 | todo | 函数 | 验证成功后调用,在这里发送验证码 | function | - |
 | endCallback | 函数 | 验证码结束回调 | function | - |
+=======
+基于Vue2.0获取手机验证码插件,可高度自定义.
+>>>>>>> 81cc489753e71fc43cc648ef9f2bccc976e97e1b

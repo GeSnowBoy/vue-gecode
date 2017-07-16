@@ -74,6 +74,25 @@ export default {
 </script>
 ```
 
+
+
+## 运行demo
+
+
+```javascript
+//1. 下载代码
+git clone https://github.com/GeSnowBoy/vue-gecode.git
+
+//2. 进入目录
+cd vue-gecode
+
+//3. 安装依赖
+npm install
+
+//4. 运行demo
+npm run
+```
+
 ## API
 
 ### Props

@@ -1,8 +1,8 @@
 
-  export default {
+  module.exports =  {
    template:`
     <div 
-      :class="{isRun:isRun}"
+      :class="activeClass"
       @click="runtime">
       {{text}}
     </div>
@@ -19,29 +19,32 @@
       }
     },
     mounted(){
-      this.firstText = this.config.startText;
+      this.firstText = this.config.startText || '获取验证码';
       this.totalTime = this.config.totalTime;
       this.tickTime = this.config.tickTime;
     },
     methods: {
       runtime(){
         let config = this.config;
-        if (!this.isRun && (!config.canTodo || config.canTodo())) {
+        config.click && config.click(this.isRun);
+        if (config.canUse && !this.isRun && (!config.canTodo || config.canTodo())) {
 
           this.isFirst = false;
           this.isRun = true;
           this.time = this.totalTime;
-          config.todo && config.todo();
+          config.todo && config.todo(config);
           this.timer = setInterval(() => {
             if (this.time == 0) {
-              this.stop();
+              this.stop(0);
             } else {
               this.time -= this.tickTime;
             }
           }, 1000 * this.tickTime);
         }
       },
-      stop(){
+      stop(type){
+        let config = this.config;
+        config.endCallback && config.endCallback(type,config);
         this.isRun = false;
         clearInterval(this.timer);
       }
@@ -60,6 +63,11 @@
             return this.config.endText || this.firstText;
           }
         }
+      },
+      activeClass(){
+        let config = this.config;
+        return (config.canUse !== undefined && !config.canUse ? (config.noCanClass || 'no-use' ) : "" )
+         + (this.isRun ? (config.activeClass || 'isRun') : '');
       }
     },
     watch: {

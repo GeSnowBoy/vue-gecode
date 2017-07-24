@@ -57,41 +57,66 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	new _vue2.default({
-			el: '#app',
-			template: '<ge-code :config="config" class="btn"/>',
-			components: {
-					geCode: _index2.default
-			},
-			data: function data() {
-					return {
-							config: {
-									//开始时候的文本
-									startText: '获取验证码(自定义)',
-									//获取验证码结束后文本
-									endText: '再次获取',
-									//验证码倒计时总时间(秒)
-									totalTime: 60,
-									//验证码每次隔多久变一次(秒)
-									tickTime: 1,
-									//自定义倒计时期间文本的显示内容
-									computeText: function computeText(num) {
-											return '重新获取 ' + num + 's';
-									},
+		el: '#app',
+		template: '\n\t<div>\n\t\t<ge-code :config="config" class="btn" ref="geCode"/>\n\t\t<button @click=closeCode>\n\t\t\t\u5173\u95ED\u5012\u8BA1\u65F6\n\t\t</button>\n\t</div>\n\n  ',
+		components: {
+			geCode: _index2.default
+		},
+		data: function data() {
+			return {
+				config: {
+					//开始时候的文本
+					startText: '获取验证码(自定义)',
+					//获取验证码结束后文本
+					endText: '再次获取',
+					//验证码倒计时总时间(秒)
+					totalTime: 60,
+					//验证码每次隔多久变一次(秒)
+					tickTime: 1,
+					//倒计时执行期添加的class 默认 isRun
+					activeClass: 'isRun',
+					//自定义倒计时期间文本的显示内容
+					computeText: function computeText(num) {
+						return '重新获取 ' + num + 's';
+					},
 
-									//是否可以发送 
-									canTodo: function canTodo() {
-											console.log('判断是否可以发送验证码', /^1[345678]\d{9}$/.test(15232509223));
-											return (/^1[345678]\d{9}$/.test(15232509223)
-											);
-									},
-									//canTode验证成功后执行 发送短信验证码
-									todo: function todo() {
-											//这里写验证码的获取程序
-											console.log('发送验证码');
-									}
-							}
-					};
+					//是否可以发送 
+					canTodo: function canTodo() {
+						console.log('判断是否可以发送验证码', /^1[345678]\d{9}$/.test(15232509223));
+						return (/^1[345678]\d{9}$/.test(15232509223)
+						);
+					},
+					//canTode验证成功后执行 发送短信验证码
+					todo: function todo() {
+						//这里写验证码的获取程序
+						console.log('发送验证码');
+					},
+					//发送完成后的回调
+					endCallback: function endCallback(type, config) {
+						console.log('发送完成后的回调', type, config);
+					},
+
+					//每次点击都会被调用
+					click: function click(isRun) {
+						console.log('\u5F53\u524D\u9A8C\u8BC1\u7801\u72B6\u6001\u662F:' + (isRun ? '发送中' : '可发送') + '\u72B6\u6001');
+					},
+
+					//是否可用   m默认ture
+					canUse: true,
+					//不可用时的类名  默认no-can
+					noCanClass: 'no-can'
+					//强行停止倒计时 到可用状态
+					// stop:
+				}
+			};
+		},
+
+		methods: {
+			closeCode: function closeCode() {
+				console.log('guanbi');
+				this.$refs.geCode.stop(1);
 			}
+		}
 	});
 
 /***/ }),
@@ -99,7 +124,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/*!
-	 * Vue.js v2.4.1
+	 * Vue.js v2.4.2
 	 * (c) 2014-2017 Evan You
 	 * Released under the MIT License.
 	 */
@@ -133,7 +158,11 @@
 	 * Check if value is primitive
 	 */
 	function isPrimitive (value) {
-	  return typeof value === 'string' || typeof value === 'number'
+	  return (
+	    typeof value === 'string' ||
+	    typeof value === 'number' ||
+	    typeof value === 'boolean'
+	  )
 	}
 
 	/**
@@ -356,14 +385,30 @@
 	 * if they are plain objects, do they have the same shape?
 	 */
 	function looseEqual (a, b) {
+	  if (a === b) { return true }
 	  var isObjectA = isObject(a);
 	  var isObjectB = isObject(b);
 	  if (isObjectA && isObjectB) {
 	    try {
-	      return JSON.stringify(a) === JSON.stringify(b)
+	      var isArrayA = Array.isArray(a);
+	      var isArrayB = Array.isArray(b);
+	      if (isArrayA && isArrayB) {
+	        return a.length === b.length && a.every(function (e, i) {
+	          return looseEqual(e, b[i])
+	        })
+	      } else if (!isArrayA && !isArrayB) {
+	        var keysA = Object.keys(a);
+	        var keysB = Object.keys(b);
+	        return keysA.length === keysB.length && keysA.every(function (key) {
+	          return looseEqual(a[key], b[key])
+	        })
+	      } else {
+	        /* istanbul ignore next */
+	        return false
+	      }
 	    } catch (e) {
-	      // possible circular reference
-	      return a === b
+	      /* istanbul ignore next */
+	      return false
 	    }
 	  } else if (!isObjectA && !isObjectB) {
 	    return String(a) === String(b)
@@ -1228,7 +1273,7 @@
 	    return function mergedDataFn () {
 	      return mergeData(
 	        typeof childVal === 'function' ? childVal.call(this) : childVal,
-	        parentVal.call(this)
+	        typeof parentVal === 'function' ? parentVal.call(this) : parentVal
 	      )
 	    }
 	  } else if (parentVal || childVal) {
@@ -1344,11 +1389,10 @@
 	strats.methods =
 	strats.inject =
 	strats.computed = function (parentVal, childVal) {
-	  if (!childVal) { return Object.create(parentVal || null) }
 	  if (!parentVal) { return childVal }
 	  var ret = Object.create(null);
 	  extend(ret, parentVal);
-	  extend(ret, childVal);
+	  if (childVal) { extend(ret, childVal); }
 	  return ret
 	};
 	strats.provide = mergeDataOrFn;
@@ -3288,17 +3332,14 @@
 	  for (var key in computed) {
 	    var userDef = computed[key];
 	    var getter = typeof userDef === 'function' ? userDef : userDef.get;
-	    {
-	      if (getter === undefined) {
-	        warn(
-	          ("No getter function has been defined for computed property \"" + key + "\"."),
-	          vm
-	        );
-	        getter = noop;
-	      }
+	    if ("development" !== 'production' && getter == null) {
+	      warn(
+	        ("Getter is missing for computed property \"" + key + "\"."),
+	        vm
+	      );
 	    }
 	    // create internal watcher for the computed property.
-	    watchers[key] = new Watcher(vm, getter, noop, computedWatcherOptions);
+	    watchers[key] = new Watcher(vm, getter || noop, noop, computedWatcherOptions);
 
 	    // component-defined computed properties are already defined on the
 	    // component prototype. We only need to define computed properties defined
@@ -3328,6 +3369,15 @@
 	    sharedPropertyDefinition.set = userDef.set
 	      ? userDef.set
 	      : noop;
+	  }
+	  if ("development" !== 'production' &&
+	      sharedPropertyDefinition.set === noop) {
+	    sharedPropertyDefinition.set = function () {
+	      warn(
+	        ("Computed property \"" + key + "\" was assigned to but it has no setter."),
+	        this
+	      );
+	    };
 	  }
 	  Object.defineProperty(target, key, sharedPropertyDefinition);
 	}
@@ -3498,7 +3548,7 @@
 	        }
 	        source = source.$parent;
 	      }
-	      if ("development" !== 'production' && !hasOwn(result, key)) {
+	      if ("development" !== 'production' && !source) {
 	        warn(("Injection \"" + key + "\" not found"), vm);
 	      }
 	    }
@@ -3691,8 +3741,12 @@
 	    return createFunctionalComponent(Ctor, propsData, data, context, children)
 	  }
 
-	  // keep listeners
+	  // extract listeners, since these needs to be treated as
+	  // child component listeners instead of DOM listeners
 	  var listeners = data.on;
+	  // replace with listeners with .native modifier
+	  // so it gets processed during parent component patch.
+	  data.on = data.nativeOn;
 
 	  if (isTrue(Ctor.options.abstract)) {
 	    // abstract components do not keep anything
@@ -4155,7 +4209,7 @@
 	    defineReactive$$1(vm, '$attrs', parentData && parentData.attrs, function () {
 	      !isUpdatingChildComponent && warn("$attrs is readonly.", vm);
 	    }, true);
-	    defineReactive$$1(vm, '$listeners', parentData && parentData.on, function () {
+	    defineReactive$$1(vm, '$listeners', vm.$options._parentListeners, function () {
 	      !isUpdatingChildComponent && warn("$listeners is readonly.", vm);
 	    }, true);
 	  }
@@ -4717,7 +4771,7 @@
 	  }
 	});
 
-	Vue$3.version = '2.4.1';
+	Vue$3.version = '2.4.2';
 
 	/*  */
 
@@ -6377,7 +6431,7 @@
 	    'if(Array.isArray($$a)){' +
 	      "var $$v=" + (number ? '_n(' + valueBinding + ')' : valueBinding) + "," +
 	          '$$i=_i($$a,$$v);' +
-	      "if($$c){$$i<0&&(" + value + "=$$a.concat($$v))}" +
+	      "if($$el.checked){$$i<0&&(" + value + "=$$a.concat($$v))}" +
 	      "else{$$i>-1&&(" + value + "=$$a.slice(0,$$i).concat($$a.slice($$i+1)))}" +
 	    "}else{" + (genAssignmentCode(value, '$$c')) + "}",
 	    null, true
@@ -6513,14 +6567,11 @@
 	}
 
 	function updateDOMListeners (oldVnode, vnode) {
-	  var isComponentRoot = isDef(vnode.componentOptions);
-	  var oldOn = isComponentRoot ? oldVnode.data.nativeOn : oldVnode.data.on;
-	  var on = isComponentRoot ? vnode.data.nativeOn : vnode.data.on;
-	  if (isUndef(oldOn) && isUndef(on)) {
+	  if (isUndef(oldVnode.data.on) && isUndef(vnode.data.on)) {
 	    return
 	  }
-	  on = on || {};
-	  oldOn = oldOn || {};
+	  var on = vnode.data.on || {};
+	  var oldOn = oldVnode.data.on || {};
 	  target$1 = vnode.elm;
 	  normalizeEvents(on);
 	  updateListeners(on, oldOn, add$1, remove$2, vnode.context);
@@ -6594,7 +6645,11 @@
 	function isDirty (elm, checkVal) {
 	  // return true when textbox (.number and .trim) loses focus and its value is
 	  // not equal to the updated value
-	  return document.activeElement !== elm && elm.value !== checkVal
+	  var notInFocus = true;
+	  // #6157
+	  // work around IE bug when accessing document.activeElement in an iframe
+	  try { notInFocus = document.activeElement !== elm; } catch (e) {}
+	  return notInFocus && elm.value !== checkVal
 	}
 
 	function isInputChanged (elm, newVal) {
@@ -7374,6 +7429,7 @@
 	      if (isIE || isEdge) {
 	        setTimeout(cb, 0);
 	      }
+	      el._vOptions = [].map.call(el.options, getValue);
 	    } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
 	      el._vModifiers = binding.modifiers;
 	      if (!binding.modifiers.lazy) {
@@ -7400,10 +7456,9 @@
 	      // it's possible that the value is out-of-sync with the rendered options.
 	      // detect such cases and filter out values that no longer has a matching
 	      // option in the DOM.
-	      var needReset = el.multiple
-	        ? binding.value.some(function (v) { return hasNoMatchingOption(v, el.options); })
-	        : binding.value !== binding.oldValue && hasNoMatchingOption(binding.value, el.options);
-	      if (needReset) {
+	      var prevOptions = el._vOptions;
+	      var curOptions = el._vOptions = [].map.call(el.options, getValue);
+	      if (curOptions.some(function (o, i) { return !looseEqual(o, prevOptions[i]); })) {
 	        trigger(el, 'change');
 	      }
 	    }
@@ -7441,15 +7496,6 @@
 	  if (!isMultiple) {
 	    el.selectedIndex = -1;
 	  }
-	}
-
-	function hasNoMatchingOption (value, options) {
-	  for (var i = 0, l = options.length; i < l; i++) {
-	    if (looseEqual(getValue(options[i]), value)) {
-	      return false
-	    }
-	  }
-	  return true
 	}
 
 	function getValue (option) {
@@ -7492,7 +7538,7 @@
 	    var transition$$1 = vnode.data && vnode.data.transition;
 	    var originalDisplay = el.__vOriginalDisplay =
 	      el.style.display === 'none' ? '' : el.style.display;
-	    if (value && transition$$1 && !isIE9) {
+	    if (value && transition$$1) {
 	      vnode.data.show = true;
 	      enter(vnode, function () {
 	        el.style.display = originalDisplay;
@@ -7510,7 +7556,7 @@
 	    if (value === oldValue) { return }
 	    vnode = locateNode(vnode);
 	    var transition$$1 = vnode.data && vnode.data.transition;
-	    if (transition$$1 && !isIE9) {
+	    if (transition$$1) {
 	      vnode.data.show = true;
 	      if (value) {
 	        enter(vnode, function () {
@@ -8251,9 +8297,6 @@
 	    last = html;
 	    // Make sure we're not in a plaintext content element like script/style
 	    if (!lastTag || !isPlainTextElement(lastTag)) {
-	      if (shouldIgnoreFirstNewline(lastTag, html)) {
-	        advance(1);
-	      }
 	      var textEnd = html.indexOf('<');
 	      if (textEnd === 0) {
 	        // Comment:
@@ -8299,6 +8342,9 @@
 	        var startTagMatch = parseStartTag();
 	        if (startTagMatch) {
 	          handleStartTag(startTagMatch);
+	          if (shouldIgnoreFirstNewline(lastTag, html)) {
+	            advance(1);
+	          }
 	          continue
 	        }
 	      }
@@ -8959,8 +9005,8 @@
 	            );
 	          }
 	        }
-	        if (!el.component && (
-	          isProp || platformMustUseProp(el.tag, el.attrsMap.type, name)
+	        if (isProp || (
+	          !el.component && platformMustUseProp(el.tag, el.attrsMap.type, name)
 	        )) {
 	          addProp(el, name, value);
 	        } else {
@@ -9746,7 +9792,7 @@
 	}
 
 	function genComment (comment) {
-	  return ("_e('" + (comment.text) + "')")
+	  return ("_e(" + (JSON.stringify(comment.text)) + ")")
 	}
 
 	function genSlot (el, state) {
@@ -10164,11 +10210,8 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = {
-	  template: '\n    <div \n      :class="{isRun:isRun}"\n      @click="runtime">\n      {{text}}\n    </div>\n  ',
+	module.exports = {
+	  template: '\n    <div \n      :class="activeClass"\n      @click="runtime">\n      {{text}}\n    </div>\n  ',
 	  data: function data() {
 	    return {
 	      time: '',
@@ -10181,7 +10224,7 @@
 	    };
 	  },
 	  mounted: function mounted() {
-	    this.firstText = this.config.startText;
+	    this.firstText = this.config.startText || '获取验证码';
 	    this.totalTime = this.config.totalTime;
 	    this.tickTime = this.config.tickTime;
 	  },
@@ -10191,22 +10234,25 @@
 	      var _this = this;
 
 	      var config = this.config;
-	      if (!this.isRun && (!config.canTodo || config.canTodo())) {
+	      config.click && config.click(this.isRun);
+	      if (config.canUse && !this.isRun && (!config.canTodo || config.canTodo())) {
 
 	        this.isFirst = false;
 	        this.isRun = true;
 	        this.time = this.totalTime;
-	        config.todo && config.todo();
+	        config.todo && config.todo(config);
 	        this.timer = setInterval(function () {
 	          if (_this.time == 0) {
-	            _this.stop();
+	            _this.stop(0);
 	          } else {
 	            _this.time -= _this.tickTime;
 	          }
 	        }, 1000 * this.tickTime);
 	      }
 	    },
-	    stop: function stop() {
+	    stop: function stop(type) {
+	      var config = this.config;
+	      config.endCallback && config.endCallback(type, config);
 	      this.isRun = false;
 	      clearInterval(this.timer);
 	    }
@@ -10225,6 +10271,10 @@
 	          return this.config.endText || this.firstText;
 	        }
 	      }
+	    },
+	    activeClass: function activeClass() {
+	      var config = this.config;
+	      return (config.canUse !== undefined && !config.canUse ? config.noCanClass || 'no-use' : "") + (this.isRun ? config.activeClass || 'isRun' : '');
 	    }
 	  },
 	  watch: {

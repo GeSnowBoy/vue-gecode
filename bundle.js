@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
+/******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -58,11 +58,17 @@
 
 	new _vue2.default({
 		el: '#app',
-		template: '\n\t<div>\n\t\t<ge-code :config="config" class="btn" ref="geCode"/>\n\t\t<button @click=closeCode>\n\t\t\t\u5173\u95ED\u5012\u8BA1\u65F6\n\t\t</button>\n\t</div>\n\n  ',
+		template: '\n\t<div style="max-width:1200px;margin:auto;padding:20px;">\n\t  <input  v-model="phone"/>\n\t\t<ge-code :config="config" class="btn" ref="geCode"/>\n\t\t<button @click=closeCode>\n\t\t\t\u5173\u95ED\u5012\u8BA1\u65F6\n\t\t</button>\n\t\t<div style="padding:20px;">\n\t\t\t<ge-code class="btn" />\n\t\t\t<ge-code :config="{totalTime:4}" class="btn" />\n\t\t</div>\n\t</div>\n\n  ',
 		components: {
 			geCode: _index2.default
 		},
+		created: function created() {
+			//修改全局配置参数
+			_index2.default.options.totalTime = 20; //总时间修改成20秒
+		},
 		data: function data() {
+			var _this = this;
+
 			return {
 				config: {
 					//开始时候的文本
@@ -77,14 +83,19 @@
 					activeClass: 'isRun',
 					//自定义倒计时期间文本的显示内容
 					computeText: function computeText(num) {
+						//num 倒计时时间
 						return '重新获取 ' + num + 's';
 					},
 
 					//是否可以发送 
 					canTodo: function canTodo() {
-						console.log('判断是否可以发送验证码', /^1[345678]\d{9}$/.test(15232509223));
-						return (/^1[345678]\d{9}$/.test(15232509223)
-						);
+						//返回值判定是否可以发送
+						var result = /^1[345678]\d{9}$/.test(_this.phone);
+						console.log('判断是否可以发送验证码', result);
+						if (!result) {
+							alert('手机号格式不正确');
+						}
+						return result;
 					},
 					//canTode验证成功后执行 发送短信验证码
 					todo: function todo() {
@@ -93,27 +104,29 @@
 					},
 					//发送完成后的回调
 					endCallback: function endCallback(type, config) {
+						//type 回调产生原因  0: 时间结束   其他值由this.$refs.geCode.stop(1)调入自定义
+						//config config配置  
 						console.log('发送完成后的回调', type, config);
 					},
 
 					//每次点击都会被调用
 					click: function click(isRun) {
+						//isRun 是否在运行中
 						console.log('\u5F53\u524D\u9A8C\u8BC1\u7801\u72B6\u6001\u662F:' + (isRun ? '发送中' : '可发送') + '\u72B6\u6001');
 					},
 
-					//是否可用   m默认ture
+					//是否可用   默认ture
 					canUse: true,
 					//不可用时的类名  默认no-can
 					noCanClass: 'no-can'
-					//强行停止倒计时 到可用状态
-					// stop:
-				}
+				},
+				phone: '15232509344'
 			};
 		},
 
 		methods: {
 			closeCode: function closeCode() {
-				console.log('guanbi');
+				console.log('关闭');
 				this.$refs.geCode.stop(1);
 			}
 		}
@@ -10210,7 +10223,27 @@
 
 	'use strict';
 
-	module.exports = {
+	var config = {
+	  startText: '获取验证码',
+	  endText: '再次获取',
+	  totalTime: 60,
+	  tickTime: 1,
+	  activeClass: 'isRun',
+	  computeText: function computeText(num) {
+	    return '重新获取 ' + num + 's';
+	  },
+
+	  canTodo: function canTodo() {
+	    return true;
+	  },
+	  todo: function todo() {},
+	  endCallback: function endCallback() {},
+	  click: function click() {},
+
+	  canUse: true,
+	  noCanClass: 'no-can'
+	};
+	var geCode = {
 	  template: '\n    <div \n      :class="activeClass"\n      @click="runtime">\n      {{text}}\n    </div>\n  ',
 	  data: function data() {
 	    return {
@@ -10223,36 +10256,33 @@
 
 	    };
 	  },
-	  mounted: function mounted() {
-	    this.firstText = this.config.startText || '获取验证码';
-	    this.totalTime = this.config.totalTime;
-	    this.tickTime = this.config.tickTime;
+	  created: function created() {
+	    this.options = Object.assign({}, config);
 	  },
 
 	  methods: {
 	    runtime: function runtime() {
 	      var _this = this;
 
-	      var config = this.config;
-	      config.click && config.click(this.isRun);
-	      if (config.canUse && !this.isRun && (!config.canTodo || config.canTodo())) {
-
+	      var config = this._config;
+	      config.click(this.isRun);
+	      if (config.canUse && !this.isRun && config.canTodo()) {
 	        this.isFirst = false;
 	        this.isRun = true;
-	        this.time = this.totalTime;
-	        config.todo && config.todo(config);
+	        this.time = config.totalTime;
+	        config.todo(config);
 	        this.timer = setInterval(function () {
-	          if (_this.time == 0) {
+	          if (_this.time <= config.tickTime) {
 	            _this.stop(0);
 	          } else {
-	            _this.time -= _this.tickTime;
+	            _this.time -= config.tickTime;
 	          }
-	        }, 1000 * this.tickTime);
+	        }, 1000 * config.tickTime);
 	      }
 	    },
 	    stop: function stop(type) {
-	      var config = this.config;
-	      config.endCallback && config.endCallback(type, config);
+	      var config = this._config;
+	      if (this.isRun) config.endCallback(type, config);
 	      this.isRun = false;
 	      clearInterval(this.timer);
 	    }
@@ -10261,27 +10291,29 @@
 	    config: {}
 	  },
 	  computed: {
+	    _config: function _config() {
+	      return Object.assign(this.options, this.config || {});
+	    },
 	    text: function text() {
+	      var config = this._config;
 	      if (this.isFirst) {
-	        return this.firstText;
+	        return config.startText;
 	      } else {
 	        if (this.isRun) {
-	          return this.config.computeText ? this.config.computeText(this.time) : this.time + 's';
+	          return config.computeText(this.time);
 	        } else {
-	          return this.config.endText || this.firstText;
+	          return config.endText;
 	        }
 	      }
 	    },
 	    activeClass: function activeClass() {
-	      var config = this.config;
-	      return (config.canUse !== undefined && !config.canUse ? config.noCanClass || 'no-use' : "") + (this.isRun ? config.activeClass || 'isRun' : '');
+	      var config = this._config;
+	      return (!config.canUse ? config.noCanClass + ' ' : '') + (this.isRun ? config.activeClass : '');
 	    }
-	  },
-	  watch: {
-	    time: function time(val) {}
-	  },
-	  filters: {}
+	  }
 	};
+	geCode.options = config;
+	module.exports = geCode;
 
 /***/ })
 /******/ ]);

@@ -1,13 +1,23 @@
 {
   "name": "vue-gecode",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "基于Vue2开发的获取验证码倒计时组件,高度自定义配置,可实现各种开发需求.",
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --inline --content-base .",
     "build": "webpack && git add . && git commit -am '编译demo并发布到github' &&  git subtree push  --prefix=build origin gh-pages"
   },
-  "author": "",
+  "author": "gesnowboy",
+  "keywords": [
+    "input",
+    "gecode",
+    "手机号",
+    "验证码",
+    "倒计时",
+    "vue",
+    "验证",
+    "手机"
+  ],
   "license": "ISC",
   "dependencies": {
     "vue": "^2.4.1"

@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --hide-modules",
-    "build": "webpack --mode production && git add . && git commit -am '脚本编译demo并发布到github' &&  git subtree push  --prefix=bundle origin gh-pages "
+    "build": "webpack --mode production ./src/index.js && git add . && git commit -am '脚本编译demo并发布到github' &&  git subtree push  --prefix=bundle origin gh-pages "
   },
   "author": "gesnowboy",
   "keywords": [

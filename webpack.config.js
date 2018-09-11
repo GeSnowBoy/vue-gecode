@@ -1,12 +1,11 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 let path = require('path')
-
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
 function resolve(strPath) {
   return path.resolve(__dirname, strPath)
 }
-console.log(process.env)
 module.exports = {
-  entry: './index.js',
+  entry: './demo/index.js',
   devServer: {
     inline: true, //DevServer 会在构建完变化后的代码时通过代理客户端控制网页刷新。
     port: 3243,
@@ -18,20 +17,23 @@ module.exports = {
     filename: 'vue-gecode.min.js'
   },
   resolve: {
+    modules: [
+      resolve('src'),
+      resolve('static'),
+      resolve('node_modules')
+    ],
+    extensions: ['.js', '.jsx', '.ts', '.vue'],
     alias: {
       'vue': 'vue/dist/vue.js'
     }
   },
-  externals: {
-    Vue: {
-      root: 'Vue',
-      commonjs: 'vue',
-      commonjs2: 'vue',
-      amd: 'vue'
-    }
-  },
+   devtool:  'source-map',
   module: {
-    rules: [{
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },{
       test: /\.js$/,
       exclude: /node_modules/,
       include: resolve('src'),
@@ -51,6 +53,7 @@ module.exports = {
     }]
   },
   plugins: [
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: resolve('./index.html'),
       inject: true,

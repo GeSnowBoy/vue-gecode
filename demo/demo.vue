@@ -1,28 +1,25 @@
-import Vue from 'vue';
-import geCode from './src';
-
-new Vue({
-	el: '#app',
-	template: `
-	<div style="max-width:1200px;margin:auto;padding:20px;">
+<template>
+   <div style="max-width:1200px;margin:auto;padding:20px;">
 	  <input  v-model="phone"/>
 		<ge-code :config="config" class="btn" ref="geCode"/>
 		<button @click=closeCode>
 			关闭倒计时
 		</button>
-		<div style="padding:20px;">
-			<ge-code class="btn" />
-			<ge-code :config="{totalTime:4}" class="btn" />
-		</div>
+		<br/>
+	     <div v-for="i in 10" class="btn" :style="{margin:'10px',background:'hsla('+i*10+', 100%, 40%, 2)'}">
+			 <ge-code></ge-code>	
+		 </div>
 	</div>
+</template>
+<script>
+import GeCode from '../src';
 
-  `,
-	components: {
-		geCode
-	},
-	created(){
+export default {
+    
+components:{GeCode},
+created(){
 			//修改全局配置参数
-			geCode.options.totalTime = 20;//总时间修改成20秒
+			GeCode.options.totalTime = 20;//总时间修改成20秒
 	},
 	data() {
 		return {
@@ -83,4 +80,5 @@ new Vue({
 			this.$refs.geCode.stop(1);
 		}
 	}
-})
+}
+</script>

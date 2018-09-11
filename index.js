@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import geCode from './src/index';
-
+console.log(3)
 new Vue({
 	el: '#app',
 	template: `

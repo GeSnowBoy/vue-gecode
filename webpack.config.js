@@ -4,13 +4,10 @@ let path = require('path')
 function resolve(strPath) {
   return path.resolve(__dirname, strPath)
 }
+console.log(process.env)
 module.exports = {
-  mode: 'development',
-  entry: {
-    main: './index.js'
-  },
+  entry: './index.js',
   devServer: {
-    hot: true,
     inline: true, //DevServer 会在构建完变化后的代码时通过代理客户端控制网页刷新。
     port: 3243,
     host: '0.0.0.0',
@@ -18,7 +15,6 @@ module.exports = {
   },
   output: {
     path: resolve('./dist'),
-    publicPath: './',
     filename: 'vue-gecode.min.js'
   },
   resolve: {
@@ -27,7 +23,7 @@ module.exports = {
     }
   },
   externals: {
-    vue: {
+    Vue: {
       root: 'Vue',
       commonjs: 'vue',
       commonjs2: 'vue',
@@ -38,6 +34,7 @@ module.exports = {
     rules: [{
       test: /\.js$/,
       exclude: /node_modules/,
+      include: resolve('src'),
       use: [{
         loader: 'babel-loader',
         options: {

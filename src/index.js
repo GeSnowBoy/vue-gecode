@@ -1,3 +1,4 @@
+
 let config = {
   startText: '获取验证码',
   endText: '再次获取',

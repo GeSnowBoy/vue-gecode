@@ -15,23 +15,23 @@ module.exports = {
       test: /\.vue$/,
       loader: 'vue-loader'
     },
-    //  {
-    //   test: /\.js$/,
-    //   exclude: /node_modules/,
-    //   use: [{
-    //     loader: 'babel-loader',
-    //     options: {
-    //       cacheDirectory: true,
-    //       'presets': [
-    //         // 把es6转成es5
-    //         ['env', {
-    //           'modules': false
-    //         }],
-    //         'stage-0'
-    //       ],
-    //     }
-    //   }]
-    // }
+     {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: [{
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+          'presets': [
+            // 把es6转成es5
+            ['env', {
+              'modules': false
+            }],
+            'stage-0'
+          ],
+        }
+      }]
+    }
   ]
 
   },

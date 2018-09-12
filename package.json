@@ -1,11 +1,13 @@
 {
   "name": "vue-gecode",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "基于Vue2开发的获取验证码倒计时组件,高度自定义配置,可实现各种开发需求.",
-  "main": "src/index.js",
+  "main": "dist/vue-ge-code.min.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --hide-modules",
-    "build": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && git add . && git commit -am '脚本编译demo并发布到github' &&  git subtree push  --prefix=bundle origin gh-pages "
+    "build": "webpack --mode production --config webpack.build.config.js --progress --hide-modules",
+    "postinstall": "rm -rf dist && git subtree add --prefix=dist origin gh-pages",
+    "publish": "npm run build &&  git add . && git commit -am '脚本编译demo并发布到github' &&  git subtree push  --prefix=dist origin gh-pages"
   },
   "author": "gesnowboy",
   "keywords": [
